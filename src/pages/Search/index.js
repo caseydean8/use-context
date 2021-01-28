@@ -4,9 +4,9 @@ import SearchForm from "../../components/SearchForm";
 import SearchResults from "../../components/SearchResults";
 import Alert from "../../components/Alert";
 import API from "../../utils/API";
+import ArticleContext from "../../utils/ArticleContext";
 
 function Search() {
-
   // const [search, setSearch] = useState("Wikipedia");
   // const [title, setTitle] = useState("");
   // const [description, setDescription] = useState("");
@@ -19,7 +19,7 @@ function Search() {
     title: "",
     description: "",
     url: "",
-    error: ""
+    error: "",
   });
 
   // When the component mounts, update the title to be Wikipedia Searcher
@@ -31,7 +31,7 @@ function Search() {
     }
 
     API.searchTerms(wikiSearch.search)
-      .then(res => {
+      .then((res) => {
         console.log("results in useEffect", res);
 
         if (res.data.length === 0) {
@@ -47,24 +47,27 @@ function Search() {
           title: res.data[1],
           description: res.data[2][0],
           url: res.data[3][0],
-          error: ""
+          error: "",
         });
       })
-      .catch(err => setWikiSearch({ error: err.message }));
-  }, [ wikiSearch.search]);
+      .catch((err) => setWikiSearch({ error: err.message }));
+  }, [wikiSearch.search]);
 
-  const handleInputChange = event => {
-    setWikiSearch(event.target.value);
+  const handleInputChange = (event) => {
+    setWikiSearch({ search: event.target.value });
   };
 
-  const handleFormSubmit = event => {
+  const handleFormSubmit = (event) => {
     event.preventDefault();
   };
   return (
     <div>
       <Container style={{ minHeight: "100vh" }}>
         <h1 className="text-center">Search For Anything on Wikipedia</h1>
-        <Alert type="danger" style={{ opacity: wikiSearch.error ? 1 : 0, marginBottom: 10 }}>
+        <Alert
+          type="danger"
+          style={{ opacity: wikiSearch.error ? 1 : 0, marginBottom: 10 }}
+        >
           {wikiSearch.error}
         </Alert>
         <SearchForm
@@ -72,7 +75,13 @@ function Search() {
           handleInputChange={handleInputChange}
           results={wikiSearch.search}
         />
-        <SearchResults title={wikiSearch.title} description={wikiSearch.description} url={wikiSearch.url} />
+        <ArticleContext.Provider value={wikiSearch}>
+          <SearchResults
+            // title={wikiSearch.title}
+            // description={wikiSearch.description}
+            // url={wikiSearch.url}
+          />
+        </ArticleContext.Provider>
       </Container>
     </div>
   );
